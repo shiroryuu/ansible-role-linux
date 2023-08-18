@@ -1,0 +1,19 @@
+- name: Devel | Ensure Clang is installed.
+  packages:
+    state: present
+    name:
+      - clang
+      - llvm
+  when: clang | bool
+
+- name: Devel | Setup python packages.
+  import_tasks: packages/python.yml
+  when: python | bool
+
+- name: Devel | Setup rust environment
+  import_tasks: packages/rust.yml
+  when: rust | bool
+
+- name: Devel | Ensure Go is installed.
+  import_tasks: packages/go.yml
+  when: golang | bool

@@ -1,0 +1,26 @@
+---
+# tasks file for ansible-role-linux
+- name: Load OS variable
+  tag: always
+  include_vars: "{{ ansible_distribution | title }}.yml"
+
+- include_tasks: setup/Debian.yml
+  when: ansible_distribution == "Debian"
+
+- include_tasks: setup/Archlinux.yml
+  when: ansible_distribution == "Archlinux"
+
+- import_tasks: setup/Users.yml
+
+- name: Install base packages.
+  import_tasks: packages/base.yml
+
+- name: Setting up Dev environment.
+  include_vars: setup/Dev.yml
+  when: setup_dev_env | bool
+
+- name: Dev | Setup rust environment
+  import_tasks: packages/rust.yml
+  when: rust | bool
+# Set user_home variable
+#

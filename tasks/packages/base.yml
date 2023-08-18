@@ -1,0 +1,43 @@
+---
+- name: Ensure essential packages are installed.
+  package:
+    state: present
+    name:
+      - at
+      - bat
+      - btop
+      - "{{ build_tools_package }}"
+      - colordiff
+      - curl
+      - "{{ dns_utils_package }}"
+      - btop
+      - git
+      - htop
+      - lf
+      - "{{ lm_sensors_package }}"
+      - lsd
+      - lsof
+      - mc
+      - neofetch
+      - net-tools
+      - "{{ python_package }}"
+      - "{{ python_pip_package }}"
+      - "{{ nfs_client_package }}"
+      - perl
+      - ruby
+      - rsync
+      - "{{ ruby_rake_package }}"
+      - screen
+      - sshfs
+      - vim
+      - wget
+      - whois
+      - zsh
+
+- name: Ensure man-page is installed (Arch).
+  community.general.pacman:
+    state: present
+    name:
+      - man-db
+      - man-pages
+  when: ansible_distribution == "Archlinux"

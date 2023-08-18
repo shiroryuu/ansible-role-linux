@@ -1,0 +1,60 @@
+---
+# - name: Setup | Debian | Add debian-backports
+#   ansible.builtin.apt_repository:
+#
+- name: Setup | Debian | Ensure lib32(i386) is enabled.
+  lineinfile:
+    path: /var/lib/dpkg/arch
+    regexp: "^i386"
+    line: "i386"
+    mode: "0644"
+    create: true
+  when: setup_lib32 | bool
+
+- name: Setup | Debian | Ensure firmware is installed.
+  apt:
+    name: firmware-linux
+    state: present
+
+- name: Setup | Debian | Enable contrib repo.
+  apt_repository:
+    repo: deb http://deb.debian.org/debian "{{ ansible_distribution_release }}" contrib
+    state: present
+  when: setup_repo_contrib | bool
+
+- name: Setup | Debian | Enable non-free-firmware repo.
+  apt_repository:
+    repo: deb http://deb.debian.org/debian "{{ ansible_distribution_release }}" non-free-firmware
+    state: present
+  when: setup_repo_nonfreefirmware | bool
+
+- name: Setup | Debian | Install non-free firmware.
+  apt:
+    name:
+      - firmware-linux-nonfree
+      - firmware-misc-nonfree
+  when: install_firmware_nonfree | bool
+
+- name: Setup | Debian | Enable non-free repo.
+  apt_repository:
+    repo: deb http://deb.debian.org/debian "{{ ansible_distribution_release }}" non-free
+    state: present
+  when: setup_repo_nonfree | bool
+
+- name: Setup | Debian | Build essential tools.
+  apt:
+    name:
+      - build-essential
+      - dkms
+      - gettext
+      - "linux-headers-{{ ansible_kernel }}"
+    state: present
+  when: install_build_essentials | bool
+
+- name: Setup | Debian | Package management tools.
+  apt:
+    name:
+      - aptitude
+      - nala
+      - software-properties-common
+    state: present

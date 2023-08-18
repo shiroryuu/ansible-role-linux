@@ -1,0 +1,51 @@
+- name: Need to remove this name
+  set_fact:
+    xdg_data_home: "{{ xdg_data_home | default(lookup('env', 'HOME') + '/.local/share', true) }}"
+    rustup_update_root: "{{ rustup_update_root | default('https://static.rust-lang.org/rustup') }}"
+    rustup_url: "{{ rustup_update_root }}/dist/{{ ansible_architecture }}-unknown-linux-gnu/rustup-init" #Fix this
+
+# local _url="${RUSTUP_UPDATE_ROOT}/dist/${_arch}/rustup-init${_ext}"
+# _arch="${_cputype}-${_ostype}"
+# _cputype: x86_64
+# _ostype: unknown-linux-gnu
+
+- name: Packages | Rust | Checking for Existing installation
+  stat:
+    path: "{{ xdg_data_home }}/cargo"
+  register: rust_install
+
+- name: Packages | Rust | Installing Rust...
+  when: not rust_install.stat.exists
+  block:
+    - name: Packages | Rust | Ensure tempdir is created.
+      tempfile:
+        state: directory
+        prefix: rust-
+      register: _rust_tempdir
+
+    - name: Packages | Rust | Download RUSTUP
+      get_url:
+        url: "{{ _rustup_url }}"
+        dest: "{{ _rust_tempdir.path }}/rustup-init"
+        mode: 0755
+
+    - name: Packages | Rust | Install Rustup
+      # command: "{{ _rust_tempdir.path }}/rustup-init -y --profile default"
+      command:
+        argv:
+          - "rustup-init"
+          - "-y"
+          - "--profile"
+          - "default"
+        chdir: "{{ _rust_tempdir.path }}"
+      register: rustup_out
+      changed_when: false #need to add suitable changed clause
+      environment:
+        RUSTUP_HOME: "{{ xdg_data_home }}/rustup"
+        CARGO_HOME: "{{ xdg_data_home }}/cargo"
+
+- name: Packages | RUST | Cleaning Up...
+  file:
+    path: "{{ _rust_tempdir.path }}"
+    state: absent
+  when: _rust_tempdir.path is defined

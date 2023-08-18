@@ -1,0 +1,17 @@
+---
+amd_microcode_package: amd64-microcode
+build_tools_package: build-essential
+cron_package: cron
+default_sudo_group: sudo
+dns_utils_package: dnsutils
+intel_microcode_package: intel-microcode
+lm_sensors_package: lm-sensors
+nfs_client_package: nfs-common
+python_flake_package: python3-flake8
+python_package: python3
+python_pip_package: python3-pip
+python_psutil_package: python3-psutil
+python_pyflakes_package: python3-pyflakes
+python_venv_package: python3-virtualenv
+rename_package: perl-rename
+ruby_rake_package: rake
