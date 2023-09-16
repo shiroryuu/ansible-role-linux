@@ -1,40 +1,51 @@
----
-- name: Ensure essential packages are installed.
+- name: Base | Ensure base packages are installed.
   package:
     state: present
     name:
       - at
       - bat
       - btop
-      - "{{ build_tools_package }}"
+      - "{{ build_tools_pkg }}"
       - colordiff
       - curl
-      - "{{ dns_utils_package }}"
+      - "{{ dns_utils_pkg }}"
       - btop
       - git
       - htop
       - lf
-      - "{{ lm_sensors_package }}"
+      - "{{ lm_sensors_pkg }}"
       - lsd
       - lsof
       - mc
       - neofetch
       - net-tools
-      - "{{ python_package }}"
-      - "{{ python_pip_package }}"
-      - "{{ nfs_client_package }}"
+      - "{{ python_pkg }}"
+      - "{{ python_pip_pkg }}"
+      - "{{ nfs_client_pkg }}"
       - perl
       - ruby
       - rsync
-      - "{{ ruby_rake_package }}"
+      - "{{ ruby_rake_pkg }}"
       - screen
       - sshfs
+      - trash-cli
       - vim
       - wget
       - whois
       - zsh
 
-- name: Ensure man-page is installed (Arch).
+- name: Base | Ensure unnecessary packages are removed.
+  package:
+    state: absent
+    name:
+      - cowsay
+      - exim4
+      - exim4-base
+      - exim4-config
+      - nano
+    when: ansible_distribution == "Debian"
+
+- name: Base | Ensure man-page is installed (Arch).
   community.general.pacman:
     state: present
     name:

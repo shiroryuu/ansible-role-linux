@@ -5,11 +5,18 @@ default_user_group: "arvind"
 default_user_passwd: "{{ default_user_passwd | password('sha512', default_passwd_salt) }}"
 default_user_shell: "/bin/zsh"
 
+setup_users: true
+setup_lib32: true
+setup_repo_contrib: true
+setup_repo_nonfreefirmware: true
+setup_repo_nonfree: true
+install_firmware_nonfree: true
+install_build_essentials: true
+
 # XDG Defaults
 user_home: "{{ lookup('env', 'HOME') }}"
+xdg_data_home: "~/.local/share"
 xdg_cache_home: "{{ lookup('env', 'XDG_CACHE_HOME') | default(lookup('env', 'HOME') + '/.cache', true) }}"
 # xdg_config_home: "{{ lookup('env', 'XDG_CONFIG_HOME') | default({{ user_home}})}}"
 # xdg_data_home:
 # xdg_state_home:
-
-install_build_essentials: true

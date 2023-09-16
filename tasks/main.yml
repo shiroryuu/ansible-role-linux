@@ -4,23 +4,16 @@
   tag: always
   include_vars: "{{ ansible_distribution | title }}.yml"
 
-- include_tasks: setup/Debian.yml
-  when: ansible_distribution == "Debian"
+- name: Setting up distro specific tasks.
+  include_tasks: "setup/{{ ansible_distribution | title }}.yml"
 
-- include_tasks: setup/Archlinux.yml
-  when: ansible_distribution == "Archlinux"
-
-- import_tasks: setup/Users.yml
+- name: Setting up users.
+  import_tasks: setup/Users.yml
+  when: setup_users | bool
 
 - name: Install base packages.
   import_tasks: packages/base.yml
 
 - name: Setting up Dev environment.
-  include_vars: setup/Dev.yml
+  import_tasks: setup/Devel.yml
   when: setup_dev_env | bool
-
-- name: Dev | Setup rust environment
-  import_tasks: packages/rust.yml
-  when: rust | bool
-# Set user_home variable
-#
