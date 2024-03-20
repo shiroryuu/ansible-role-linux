@@ -1,7 +1,7 @@
 ---
 # tasks file for ansible-role-linux
 - name: Load OS variable
-  tag: always
+  tags: always
   include_vars: "{{ ansible_distribution | title }}.yml"
 
 - name: Setting up distro specific tasks.
