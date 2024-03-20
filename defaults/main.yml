@@ -4,19 +4,28 @@ default_user_username: "arvind"
 default_user_group: "arvind"
 default_user_passwd: "{{ default_user_passwd | password('sha512', default_passwd_salt) }}"
 default_user_shell: "/bin/zsh"
+user_home: "/home/{{ default_user_username }}"
 
+setup_dev_env: true
 setup_users: true
 setup_lib32: true
 setup_repo_contrib: true
 setup_repo_nonfreefirmware: true
 setup_repo_nonfree: true
-install_firmware_nonfree: true
+
 install_build_essentials: true
+install_firmware_nonfree: true
+install_clang: true
+install_python: true
+install_golang: true
+
+# Rust defaults
+install_rust: true
+rustup_update_root: "https://static.rust-lang.org/rustup"
+rustup_url: "{{ rustup_update_root }}/dist/{{ ansible_architecture }}-unknown-linux-gnu/rustup-init" #Fix this
 
 # XDG Defaults
-user_home: "{{ lookup('env', 'HOME') }}"
-xdg_data_home: "~/.local/share"
-xdg_cache_home: "{{ lookup('env', 'XDG_CACHE_HOME') | default(lookup('env', 'HOME') + '/.cache', true) }}"
-# xdg_config_home: "{{ lookup('env', 'XDG_CONFIG_HOME') | default({{ user_home}})}}"
-# xdg_data_home:
-# xdg_state_home:
+xdg_cache_home: "{{ lookup('env', 'XDG_CACHE_HOME') | default(user_home + '/.cache', true) }}"
+xdg_config_home: "{{ lookup('env', 'XDG_CONFIG_HOME') | default(user_home + '/.config', true) }}"
+xdg_data_home: "{{ lookup('env', 'XDG_DATA_HOME') | default(user_home + '/.local/share', true) }}"
+xdg_state_home: "{{ lookup('env', 'XDG_STATE_HOME') | default(user_home + '/.local/state', true) }}"
