@@ -1,0 +1,15 @@
+- name: Packages | ASDF | Ensure latest version is fetched
+  shell: |
+    set -o pipefail &&
+    curl -s https://api.github.com/repos/asdf-vm/asdf/releases/latest | grep -Po '\"tag_name\": ?\"\\Kv.*?(?=\")'
+  changed_when: false
+  failed_when: false
+  register: asdf_release_version
+
+- name: Packages | ASDF | clone the repo
+  git:
+    repo: https://github.com/asdf-vm/asdf.git
+    dest: "{{ xdg_data_home }}/asdf"
+    version: "{{ asdf_release_version }}"
+## TODO:
+# Add Shell support
