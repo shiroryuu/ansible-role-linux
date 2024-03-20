@@ -10,7 +10,7 @@
     createhome: true
     name: "{{ default_user_username }}"
     group: "{{ default_user_group }}"
-    groups: "ansible,{{ default_sudo_group }}"
+    groups: "{{ default_sudo_group }},video,input"
     comment: "{{ default_user_fullname }}"
     password: "{{ default_user_passwd_hash }}"
     shell: "{{ default_user_shell }}"
