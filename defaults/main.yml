@@ -9,6 +9,7 @@ user_home: "/home/{{ default_user_username }}"
 setup_dev_env: true
 setup_users: true
 setup_lib32: true
+setup_sid: true
 setup_repo_contrib: true
 setup_repo_nonfreefirmware: true
 setup_repo_nonfree: true
