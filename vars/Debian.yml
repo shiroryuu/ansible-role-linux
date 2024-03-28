@@ -1,4 +1,5 @@
 ---
+setup_sid: true
 amd_microcode_pkg: amd64-microcode
 build_tools_pkg: build-essential
 cron_pkg: cron

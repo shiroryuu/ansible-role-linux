@@ -1,8 +1,14 @@
 ---
-# - name: Setup | Debian | Add debian-backports
-#   ansible.builtin.apt_repository:
-#
-# TODO: Add Debian SID
+- name: Setup | Debian | SID
+  blockinfile:
+    dest: /etc/apt/sources.list
+    content: |
+      # ansible_managed
+
+      deb http://deb.debian.org/debian sid main contrib non-free non-free-firmware
+      deb-src http://deb.debian.org/debian sid main contrib non-free non-free-firmware
+  when: setup_sid | bool
+
 - name: Setup | Debian | Ensure lib32(i386) is enabled.
   lineinfile:
     path: /var/lib/dpkg/arch
@@ -21,13 +27,15 @@
   apt_repository:
     repo: deb http://deb.debian.org/debian "{{ ansible_distribution_release }}" contrib
     state: present
-  when: setup_repo_contrib | bool
+  when: setup_repo_contrib | bool and
+    not setup_sid
 
 - name: Setup | Debian | Enable non-free-firmware repo.
   apt_repository:
     repo: deb http://deb.debian.org/debian "{{ ansible_distribution_release }}" non-free-firmware
     state: present
-  when: setup_repo_nonfreefirmware | bool
+  when: setup_repo_nonfreefirmware | bool and
+    not setup_sid
 
 - name: Setup | Debian | Install non-free firmware.
   apt:
@@ -40,7 +48,8 @@
   apt_repository:
     repo: deb http://deb.debian.org/debian "{{ ansible_distribution_release }}" non-free
     state: present
-  when: setup_repo_nonfree | bool
+  when: setup_repo_nonfree | bool and
+    not setup_sid
 
 - name: Setup | Debian | Build essential tools.
   apt:
