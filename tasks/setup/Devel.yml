@@ -4,20 +4,20 @@
     name:
       - clang
       - llvm
-  when: clang | bool
+  when: install_clang | bool
 
 - name: Devel | Setup python packages.
   import_tasks: ../packages/python.yml
-  when: python | bool
+  when: install_python | bool
 
 - name: Devel | Setup rust environment
   import_tasks: ../packages/rust.yml
-  when: rust | bool
+  when: install_rust | bool
 
 - name: Devel | Ensure Go is installed.
   import_tasks: ../packages/golang.yml
-  when: golang | bool
+  when: install_golang | bool
 
 - name: Devel | Ensure ASDF is installed for managing versions.
   import_tasks: ../packages/asdf.yml
-  when: asdf | bool
+  when: install_asdf | bool

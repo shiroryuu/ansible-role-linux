@@ -17,6 +17,7 @@ setup_repo_nonfree: true
 
 install_build_essentials: true
 install_firmware_nonfree: true
+install_asdf: true
 install_clang: true
 install_python: true
 install_golang: true
