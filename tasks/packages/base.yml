@@ -63,3 +63,13 @@
       - man-db
       - man-pages
   when: ansible_distribution == "Archlinux"
+
+- name: Base | Ensure packages are installed via cargo.
+  when: rust is installed # change this
+  community.general.cargo:
+    state: present
+    name:
+      - cargo-update
+      - keepass-diff
+      - starship
+      - zellij
