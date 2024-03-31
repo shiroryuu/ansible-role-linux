@@ -16,14 +16,16 @@ install_asdf: true
 install_clang: true
 install_python: true
 install_golang: true
+install_rust: true
 
 # Rust defaults
-install_rust: true
-rustup_update_root: "https://static.rust-lang.org/rustup"
-rustup_url: "{{ rustup_update_root }}/dist/{{ ansible_architecture }}-unknown-linux-gnu/rustup-init" #Fix this
+rustup_base_url: "https://static.rust-lang.org/rustup"
+rustup_components:
+  Linux: "unknown-linux-gnu"
+  Darwin: "apple-darwin"
+rustup_url: "{{ rustup_base_url }}/dist/{{ ansible_architecture }}-{{ rustup_components[ansible_system] }}/rustup-init"
 
-# XDG Defaults
-xdg_cache_home: "{{ lookup('env', 'XDG_CACHE_HOME') | default(user_home + '/.cache', true) }}"
-xdg_config_home: "{{ lookup('env', 'XDG_CONFIG_HOME') | default(user_home + '/.config', true) }}"
-xdg_data_home: "{{ lookup('env', 'XDG_DATA_HOME') | default(user_home + '/.local/share', true) }}"
-xdg_state_home: "{{ lookup('env', 'XDG_STATE_HOME') | default(user_home + '/.local/state', true) }}"
+xdg_cache: "{{ lookup('env', 'XDG_CACHE_HOME') | default(user_home + '/.cache', true) }}"
+xdg_config: "{{ lookup('env', 'XDG_CONFIG_HOME') | default(user_home + '/.config', true) }}"
+xdg_data: "{{ lookup('env', 'XDG_DATA_HOME') | default(user_home + '/.local/share', true) }}"
+xdg_state: "{{ lookup('env', 'XDG_STATE_HOME') | default(user_home + '/.local/state', true) }}"

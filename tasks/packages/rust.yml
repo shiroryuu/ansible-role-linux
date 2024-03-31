@@ -1,36 +1,60 @@
-- name: Need to remove this name
-  set_fact:
-    xdg_data_home: "{{ xdg_data_home | default(lookup('env', 'HOME') + '/.local/share', true) }}"
-    rustup_update_root: "{{ rustup_update_root | default('https://static.rust-lang.org/rustup') }}"
-    rustup_url: "{{ rustup_update_root }}/dist/{{ ansible_architecture }}-unknown-linux-gnu/rustup-init" #Fix this
+---
+- name: Rust | Ensure current system is x86_64
+  assert:
+    that: ansible_architecture in ['x86_64', 'x86-64', 'x64', 'amd64']
 
-# local _url="${RUSTUP_UPDATE_ROOT}/dist/${_arch}/rustup-init${_ext}"
-# _arch="${_cputype}-${_ostype}"
-# _cputype: x86_64
-# _ostype: unknown-linux-gnu
+- name: Rust | Check if locally installed.
+  command: "which rustup"
+  changed_when: false
+  register: is_rust_exist
 
-- name: Packages | Rust | Checking for Existing installation
-  stat:
-    path: "{{ xdg_data_home }}/cargo"
-  register: rust_install
+- name: Rust | Determine the version of local installation.
+  command: rustc --version | grep -oP 'rustc \K([0-9]*\.?)*'
+  register: rust_local_version
+  changed_when: false
+  when: is_rust_exist.rc == 0
 
-- name: Packages | Rust | Installing Rust...
-  when: not rust_install.stat.exists
+- name: Rust | Determine the latest version.
+  shell: "curl -s https://api.github.com/repos/rust-lang/rust/releases/latest | grep -Po '\"tag_name\": ?\"\\K.*?(?=\")'"
+  changed_when: false
+  register: rust_latest_version
+
+- name: Rust | Ensure rustup is updated.
+  command: rustup self update
+  changed_when:
+    - "'updated' in rustup_update_res.stdout"
+    - "'unchanged' not in rustup_update_res.stdout"
+  register: rustup_update_res
+  when:
+    - rust_local_verison.rc == 0 and
+      rust_latest_version.stdout is version(rust_local_version.stdout, '>')
+
+- name: Rust | Ensure local version is updated.
+  command: rustup update
+  changed_when:
+    - "'updated' in rust_update_res.stdout"
+    - "'unchanged' not in rust_update_res.stdout"
+  register: rust_update_res
+  when:
+    - rust_local_verison.rc == 0 and
+      rust_latest_version.stdout is version(rust_local_version.stdout, '>')
+
+- name: Rust | Ensure rustup in installed.
+  when: is_rust_exist.rc != 0
   block:
-    - name: Packages | Rust | Ensure tempdir is created.
+    - name: Rust | Ensure tempdir is created.
       tempfile:
         state: directory
         prefix: rust-
       register: _rust_tempdir
 
-    - name: Packages | Rust | Download RUSTUP
+    - name: Rust | Ensure Rustup is downloaded
       get_url:
-        url: "{{ _rustup_url }}"
+        url: "{{ rustup_url }}"
         dest: "{{ _rust_tempdir.path }}/rustup-init"
         mode: 0755
 
-    - name: Packages | Rust | Install Rustup
-      # command: "{{ _rust_tempdir.path }}/rustup-init -y --profile default"
+    - name: Rust | Ensure Rustup is installed.
       command:
         argv:
           - "rustup-init"
@@ -41,11 +65,11 @@
       register: rustup_out
       changed_when: false #need to add suitable changed clause
       environment:
-        RUSTUP_HOME: "{{ xdg_data_home }}/rustup"
-        CARGO_HOME: "{{ xdg_data_home }}/cargo"
+        RUSTUP_HOME: "{{ xdg_data }}/rustup"
+        CARGO_HOME: "{{ xdg_data }}/cargo"
 
-- name: Packages | RUST | Cleaning Up...
-  file:
-    path: "{{ _rust_tempdir.path }}"
-    state: absent
-  when: _rust_tempdir.path is defined
+    - name: Rust | Ensure unwanted files are cleaned up.
+      file:
+        path: "{{ _rust_tempdir.path }}"
+        state: absent
+      when: _rust_tempdir.path is defined
