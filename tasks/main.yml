@@ -7,13 +7,14 @@
 - name: Setting up distro specific tasks.
   include_tasks: "setup/{{ ansible_distribution | title }}.yml"
 
-- name: Setting up users.
-  import_tasks: setup/Users.yml
-  when: setup_users | bool
-
 - name: Install base packages.
   import_tasks: packages/base.yml
 
+- name: Setting up users.
+  import_tasks: setup/Users.yml
+  when: setup_users | bool
+# Setting up users after base
+# FIX: user logged out as zsh was not installed.
 - name: Setting up Dev environment.
   import_tasks: setup/Devel.yml
   when: setup_dev_env | bool
