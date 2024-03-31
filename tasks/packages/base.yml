@@ -102,8 +102,15 @@
       - magic-wormhole
       - ntfs-3g
 
+- name: Base | Determine if cargo is installed.
+  command: "which cargo > /dev/null"
+  ignore_errors: true
+  changed_when: false
+  register: cmd_cargo_res
+
 - name: Base | Ensure packages are installed via cargo.
-  when: rust is installed # change this
+  when: cmd_cargo_res is defined and
+    cmd_cargo_res.rc == 0
   community.general.cargo:
     state: present
     name:
