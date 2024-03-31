@@ -2,40 +2,51 @@
   package:
     state: present
     name:
-      - at
       - bat
+      - bc
+      - btop
+      - binutils
       - btop
       - "{{ build_tools_pkg }}"
       - colordiff
+      - cifs-utils
       - curl
+      - cronie
+      - dialog
       - "{{ dns_utils_pkg }}"
-      - btop
       - git
-      - htop
+      - gzip
       - lf
       - "{{ lm_sensors_pkg }}"
       - lsd
       - lsof
-      - mc
       - neofetch
+      - nftables
       - net-tools
       - "{{ python_pkg }}"
       - "{{ python_pip_pkg }}"
       - "{{ nfs_client_pkg }}"
       - perl
+      - pigz
+      - p7zip
+      - plocate
       - ruby
       - rsync
       - "{{ ruby_rake_pkg }}"
       - screen
       - sshfs
       - trash-cli
+      - unrar
+      - unzip
+      - util-linux
       - vim
       - wget
       - whois
+      - zoxide
       - zsh
 
 - name: Base | Ensure unnecessary packages are removed.
-  package:
+  apt:
     state: absent
     name:
       - cowsay
@@ -43,7 +54,7 @@
       - exim4-base
       - exim4-config
       - nano
-    when: ansible_distribution == "Debian"
+  when: ansible_distribution == "Debian"
 
 - name: Base | Ensure man-page is installed (Arch).
   community.general.pacman:
