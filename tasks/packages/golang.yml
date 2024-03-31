@@ -1,5 +1,0 @@
----
-- name: Packages | Ensure golang is installed.
-  package:
-    name: "{{ golang_pkg }}"
-    state: present
