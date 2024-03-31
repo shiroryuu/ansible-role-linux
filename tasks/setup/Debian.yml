@@ -3,8 +3,6 @@
   blockinfile:
     dest: /etc/apt/sources.list
     content: |
-      # ansible_managed
-
       deb http://deb.debian.org/debian sid main contrib non-free non-free-firmware
       deb-src http://deb.debian.org/debian sid main contrib non-free non-free-firmware
   when: setup_sid | bool

@@ -1,5 +1,8 @@
 ---
 setup_sid: true
+setup_repo_contrib: true
+setup_repo_nonfreefirmware: true
+setup_repo_nonfree: true
 amd_microcode_pkg: amd64-microcode
 build_tools_pkg: build-essential
 cron_pkg: cron

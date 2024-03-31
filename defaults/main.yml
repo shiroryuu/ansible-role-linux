@@ -7,13 +7,8 @@ default_user_shell: "/bin/zsh"
 user_home: "/home/{{ default_user_username }}"
 
 setup_dev_env: true
-setup_users: true
+setup_users: false
 setup_lib32: true
-# Move to Debian vars
-setup_sid: true
-setup_repo_contrib: true
-setup_repo_nonfreefirmware: true
-setup_repo_nonfree: true
 
 install_build_essentials: true
 install_firmware_nonfree: true
