@@ -1,4 +1,5 @@
 ---
+# TODO: Check if default vars are set
 - name: Users | Ensure default user group exist.
   group:
     name: "{{ default_user_group }}"

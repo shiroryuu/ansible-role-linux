@@ -13,5 +13,3 @@
 - name: Setting up users.
   import_tasks: setup/Users.yml
   when: setup_users | bool
-# Setting up users after base
-# FIX: user logged out as zsh was not installed.

@@ -1,13 +1,14 @@
+---
 - name: Base | Ensure base packages are installed.
   package:
     state: present
     name:
       - bat
       - bc
-      - btop
       - binutils
       - btop
       - "{{ build_tools_pkg }}"
+      - cmake
       - colordiff
       - cifs-utils
       - curl
@@ -18,7 +19,6 @@
       - gzip
       - lf
       - "{{ lm_sensors_pkg }}"
-      - lsd
       - lsof
       - neofetch
       - nftables
@@ -88,6 +88,7 @@
         name: eza
         state: present
 
+# TODO: Move jq, magic-wormhole? to base utilities
 - name: Base | Ensure extra utilities are installed.
   package:
     state: present
@@ -103,7 +104,7 @@
       - ntfs-3g
 
 - name: Base | Determine if cargo is installed.
-  command: "which cargo > /dev/null"
+  shell: "command -v cargo > /dev/null"
   ignore_errors: true
   changed_when: false
   register: cmd_cargo_res
