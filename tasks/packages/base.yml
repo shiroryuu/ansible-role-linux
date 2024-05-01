@@ -3,10 +3,8 @@
   package:
     state: present
     name:
-      - bat
       - bc
       - binutils
-      - btop
       - "{{ build_tools_pkg }}"
       - cmake
       - colordiff
@@ -17,10 +15,10 @@
       - "{{ dns_utils_pkg }}"
       - git
       - gzip
+      - jq
       - lf
       - "{{ lm_sensors_pkg }}"
       - lsof
-      - neofetch
       - nftables
       - net-tools
       - "{{ python_pkg }}"
@@ -35,15 +33,12 @@
       - "{{ ruby_rake_pkg }}"
       - screen
       - sshfs
-      - trash-cli
       - unrar
       - unzip
       - util-linux
       - vim
       - wget
       - whois
-      - zoxide
-      - zsh
 
 - name: Base | Ensure unnecessary packages are removed.
   apt:
@@ -88,20 +83,25 @@
         name: eza
         state: present
 
-# TODO: Move jq, magic-wormhole? to base utilities
 - name: Base | Ensure extra utilities are installed.
+  when: setup_base_extra
   package:
     state: present
     name:
+      - bat
+      - btop
       - cups
       - dosfstools
       - exfatprogs
       - gnupg
       - groff
       - imagemagick
-      - jq
       - magic-wormhole
+      - neofetch
       - ntfs-3g
+      - trash-cli
+      - zoxide
+      - zsh
 
 - name: Base | Determine if cargo is installed.
   shell: "command -v cargo > /dev/null"
