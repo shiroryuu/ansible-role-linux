@@ -1,12 +1,4 @@
 ---
-- name: Setup | Debian | SID
-  blockinfile:
-    dest: /etc/apt/sources.list
-    content: |
-      deb http://deb.debian.org/debian sid main contrib non-free non-free-firmware
-      deb-src http://deb.debian.org/debian sid main contrib non-free non-free-firmware
-  when: setup_sid | bool
-
 - name: Setup | Debian | Ensure lib32(i386) is enabled.
   lineinfile:
     path: /var/lib/dpkg/arch
@@ -16,24 +8,29 @@
     create: true
   when: setup_lib32 | bool
 
-- name: Setup | Debian | Ensure firmware is installed.
-  apt:
-    name: firmware-linux
-    state: present
-
 - name: Setup | Debian | Enable contrib repo.
   apt_repository:
-    repo: deb http://deb.debian.org/debian "{{ ansible_distribution_release }}" contrib
+    repo: deb http://deb.debian.org/debian "{{ debian_release_name }}" contrib
     state: present
-  when: setup_repo_contrib | bool and
-    not setup_sid
+  when: setup_repo_contrib | bool
+
+- name: Setup | Debian | Enable non-free repo.
+  apt_repository:
+    repo: deb http://deb.debian.org/debian "{{ debian_release_name }}" non-free
+    state: present
+  when: setup_repo_nonfree | bool
 
 - name: Setup | Debian | Enable non-free-firmware repo.
   apt_repository:
-    repo: deb http://deb.debian.org/debian "{{ ansible_distribution_release }}" non-free-firmware
+    repo: deb http://deb.debian.org/debian "{{ debian_release_name }}" non-free-firmware
     state: present
-  when: setup_repo_nonfreefirmware | bool and
-    not setup_sid
+  when: setup_repo_nonfreefirmware | bool
+
+- name: Setup | Debian | Ensure firmware is installed.
+  when: install_firmware | bool
+  apt:
+    name: firmware-linux
+    state: present
 
 - name: Setup | Debian | Install non-free firmware.
   apt:
@@ -41,13 +38,6 @@
       - firmware-linux-nonfree
       - firmware-misc-nonfree
   when: install_firmware_nonfree | bool
-
-- name: Setup | Debian | Enable non-free repo.
-  apt_repository:
-    repo: deb http://deb.debian.org/debian "{{ ansible_distribution_release }}" non-free
-    state: present
-  when: setup_repo_nonfree | bool and
-    not setup_sid
 
 - name: Setup | Debian | Build essential tools.
   apt:
