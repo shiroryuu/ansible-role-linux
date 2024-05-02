@@ -10,7 +10,7 @@
       - colordiff
       - cifs-utils
       - curl
-      - cronie
+      - "{{ cron_pkg }}"
       - dialog
       - "{{ dns_utils_pkg }}"
       - git
@@ -63,16 +63,19 @@
   ansible.builtin.package:
     name: eza
     state: present
-  when: ansible_distribution == "Archlinux" or
-    ansible_distribution_release == "trixie"
+  when: when install_base_extras and (ansible_distribution == "Archlinux" or
+    ansible_distribution_release == "trixie")
 
 - name: Base | Ensure eza is installed in Debian Stable (bookworm and earlier)
-  when: ansible_distribution == "Debian" and
-    ansible_distribution_release != "trixie"
+  when: install_base_extras and
+    ansible_distribution == "Debian" and 
+    ( ansible_distribution_release != "trixie" and
+    ansible_distribution_major_version <= "12") and
   block:
     - name: Apt | Ensure gierens repo signing key is added to apt.
       apt_key:
         url: https://raw.githubusercontent.com/eza-community/eza/main/deb.asc
+        keyring: /etc/apt/keyrings/gierens.gpg
         state: present
     - name: Apt | Ensure gierens repo is added to /etc/apt/sources.list.
       apt_repository:
@@ -84,7 +87,7 @@
         state: present
 
 - name: Base | Ensure extra utilities are installed.
-  when: setup_base_extra
+  when: install_base_extras
   package:
     state: present
     name:
@@ -105,11 +108,13 @@
 
 - name: Base | Determine if cargo is installed.
   shell: "command -v cargo > /dev/null"
+  become: false
   ignore_errors: true
   changed_when: false
   register: cmd_cargo_res
 
 - name: Base | Ensure packages are installed via cargo.
+  become: false
   when: cmd_cargo_res is defined and
     cmd_cargo_res.rc == 0
   community.general.cargo:

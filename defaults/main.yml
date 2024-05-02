@@ -15,6 +15,7 @@ setup_repo_contrib: true
 setup_repo_nonfreefirmware: true
 setup_repo_nonfree: true
 
+install_base_extras: true
 install_build_essentials: true
 install_firmware_nonfree: true
 

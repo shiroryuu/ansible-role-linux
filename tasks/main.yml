@@ -8,6 +8,7 @@
   include_tasks: "setup/{{ ansible_distribution | title }}.yml"
 
 - name: Install base packages.
+  become: true
   import_tasks: packages/base.yml
 
 - name: Setting up users.
