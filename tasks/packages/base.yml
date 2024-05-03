@@ -33,7 +33,6 @@
       - "{{ ruby_rake_pkg }}"
       - screen
       - sshfs
-      - unrar
       - unzip
       - util-linux
       - vim
@@ -63,14 +62,15 @@
   ansible.builtin.package:
     name: eza
     state: present
-  when: when install_base_extras and (ansible_distribution == "Archlinux" or
+  when: install_base_extras and
+    (ansible_distribution == "Archlinux" or
     ansible_distribution_release == "trixie")
 
 - name: Base | Ensure eza is installed in Debian Stable (bookworm and earlier)
   when: install_base_extras and
-    ansible_distribution == "Debian" and 
-    ( ansible_distribution_release != "trixie" and
-    ansible_distribution_major_version <= "12") and
+    ansible_distribution == "Debian" and
+    (ansible_distribution_release != "trixie" and
+    ansible_distribution_major_version <= "12")
   block:
     - name: Apt | Ensure gierens repo signing key is added to apt.
       apt_key:
@@ -87,7 +87,7 @@
         state: present
 
 - name: Base | Ensure extra utilities are installed.
-  when: install_base_extras
+  when: install_base_extras | bool
   package:
     state: present
     name:
@@ -103,6 +103,7 @@
       - neofetch
       - ntfs-3g
       - trash-cli
+      - unrar
       - zoxide
       - zsh
 

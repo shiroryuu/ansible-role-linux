@@ -9,26 +9,23 @@
   become: true
   when: setup_lib32 | bool
 
-- name: Setup | Debian | Enable contrib repo.
-  apt_repository:
-    repo: deb http://deb.debian.org/debian "{{ debian_release_name }}" contrib
+- name: Setup | Debian | Determine whether existing sources.list is managed by Ansible.
+  ansible.builtin.lineinfile:
+    path: /etc/apt/sources.list
+    line: "# Managed by Ansible"
     state: present
-  become: true
-  when: setup_repo_contrib | bool
+  check_mode: true
+  register: managed_res
 
-- name: Setup | Debian | Enable non-free repo.
-  apt_repository:
-    repo: deb http://deb.debian.org/debian "{{ debian_release_name }}" non-free
-    state: present
-  become: true
-  when: setup_repo_nonfree | bool
-
-- name: Setup | Debian | Enable non-free-firmware repo.
-  apt_repository:
-    repo: deb http://deb.debian.org/debian "{{ debian_release_name }}" non-free-firmware
-    state: present
-  become: true
-  when: setup_repo_nonfreefirmware | bool
+- name: Setup | Debian | Setup apt sources
+  ansible.builtin.template:
+    src: apt-sources.j2
+    dest: /etc/apt/sources.list
+    owner: root
+    group: root
+    mode: 0644
+    backup: "{{ managed_res.changed | bool | default(true) }}"
+  notify: Apt update
 
 - name: Setup | Debian | Ensure firmware is installed.
   when: install_firmware | bool
