@@ -18,6 +18,7 @@ setup_repo_nonfree: true
 install_base_extras: true
 install_build_essentials: true
 install_firmware_nonfree: true
+install_firmware_misc: false
 
 xdg_cache: "{{ lookup('env', 'XDG_CACHE_HOME') | default(user_home + '/.cache', true) }}"
 xdg_config: "{{ lookup('env', 'XDG_CONFIG_HOME') | default(user_home + '/.config', true) }}"

@@ -25,22 +25,55 @@
     group: root
     mode: 0644
     backup: "{{ managed_res.changed | bool | default(true) }}"
-  notify: Apt update
-
-- name: Setup | Debian | Ensure firmware is installed.
-  when: install_firmware | bool
   become: true
+  register: sources_res
+
+- name: Setup | Debian | Ensure system is upgraded.
+  ansible.builtin.apt:
+    update_cache: true
+    upgrade: "full"
+  become: true
+  register: dist_upgrade
+  when: sources_res.changed | bool
+
+- name: Setup | Debian | Ensure system is rebooted after dist upgrade.
+  ansible.builtin.reboot:
+    reboot_timeout: 1200
+    connect_timeout: 60
+  become: true
+  register: reboot_res
+  when: sources_res.changed | bool and
+    dist_upgrade.changed | bool
+
+- name: Setup | Debian | Fetch facts after successfull reboot.
+  ansible.builtin.setup:
+  when: reboot_res.rebooted is defined and
+    reboot_res.rebooted | bool
+
+- name: Setup | Debian | Ensure free firmware is installed.
   apt:
-    name: firmware-linux
+    name: firmware-linux-free
     state: present
+  become: true
+  when: install_firmware | bool
 
 - name: Setup | Debian | Install non-free firmware.
   apt:
     name:
+      - firmware-linux
       - firmware-linux-nonfree
-      - firmware-misc-nonfree
+    state: present
   become: true
-  when: install_firmware_nonfree | bool
+  when: install_firmware_nonfree | bool and
+    setup_repo_nonfreefirmware | bool
+
+- name: Setup | Debian | Install misc firmware (non-free)
+  apt:
+    name: firmware-misc-nonfree
+    state: present
+  become: true
+  when: install_firmware_misc | bool and
+    setup_repo_nonfree | bool
 
 - name: Setup | Debian | Build essential tools.
   become: true

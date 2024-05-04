@@ -87,7 +87,9 @@
         state: present
 
 - name: Base | Ensure extra utilities are installed.
-  when: install_base_extras | bool
+  when: install_base_extras | bool and
+    ( ansible_distribution == "Archlinux" or
+      ( ansible_distribution == "Debian" and setup_repo_nonfree ))
   package:
     state: present
     name:
