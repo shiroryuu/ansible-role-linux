@@ -86,6 +86,7 @@
         name: eza
         state: present
 
+# TODO: Migrate from neofetch to fastfetch (when it is available in debian)
 - name: Base | Ensure extra utilities are installed.
   when: install_base_extras | bool and
     ( ansible_distribution == "Archlinux" or
