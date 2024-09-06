@@ -1,5 +1,6 @@
 ---
 - name: Base | Ensure base packages are installed.
+  become: true
   package:
     state: present
     name:

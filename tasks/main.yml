@@ -8,13 +8,12 @@
   include_tasks: "setup/{{ ansible_distribution | title }}.yml"
 
 - name: Install base packages.
-  become: true
-  import_tasks: packages/base.yml
+  include_tasks: packages/base.yml
 
 - name: Install dracut.
   include_tasks: packages/dracut.yml
   when: setup_dracut | bool
 
 - name: Setting up users.
-  import_tasks: setup/Users.yml
+  include_tasks: setup/Users.yml
   when: setup_users | bool
