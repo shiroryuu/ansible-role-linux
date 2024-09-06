@@ -34,6 +34,21 @@
     state: present
   when: install_build_essentials
 
+- name: Setup | Archlinux | Ensure Pacman Contrib is installed.
+  community.general.pacman:
+    name: pacman-contrib
+    state: present
+
+- name: Setup | Archlinux | Ensure paccache hook is installed.
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: "{{ item.mode }}"
+  with_items:
+    - {src: files/paccache-hook.sh, dest: /usr/local/bin/paccache-hook, mode: 0755}
+    - {src: files/paccache-hook.conf, dest: /etc/paccache-hook, mode: 0644}
+    - {src: files/paccache-hook.hook, dest: /etc/pacman.d/hooks/paccache.hook, mode: 0644}
+
 - name: Setup | Archlinux | Create temporary directory.
   tempfile:
     prefix: archlinux-
@@ -51,7 +66,8 @@
 # Fetch latest release from the stored repo data
 - name: Setup | Archlinux | Download Endeavouros mirrorlist
   get_url:
-    url: "https://mirrors.alpix.eu/endeavouros/repo/endeavouros/x86_64/{{ eos_repo_data.stdout | regex_search('endeavouros-mirrorlist-.*\\.pkg\\.tar\\.zst') }}"
+    url: "https://mirrors.alpix.eu/endeavouros/repo\
+      /endeavouros/x86_64/{{ eos_repo_data.stdout | regex_search('endeavouros-mirrorlist-.*\\.pkg\\.tar\\.zst') }}"
     dest: "{{ arch_tempdir.path }}/eos_mirrorlist.pkg.tar.zst"
     mode: "0644"
   when: setup_eosrepo_arch | bool
