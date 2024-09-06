@@ -1,0 +1,50 @@
+---
+# tasks file for ansible-role-archdracut
+- name: Ensure dracut is installed.
+  package:
+    name: dracut
+    state: present
+
+- name: Ensure Pacman Hooks are setup.
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0644
+  when: ansible_distribution == "Archlinux"
+  with_items:
+    - {src: files/dracut-install.hook, dest: /etc/pacman.d/hooks/90-dracut-install.hook}
+    - {src: files/dracut-remove.hook, dest: /etc/pacman.d/hooks/60-dracut-remove.hook}
+
+- name: Ensure dracut scripts are installed.
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: 0755
+  with_items:
+    - {src: files/dracut-install.sh, dest: /usr/local/bin/dracut-install}
+    - {src: files/dracut-remove.sh, dest: /usr/local/bin/dracut-remove}
+
+- name: Ensure better defualts are setup.
+  blockinfile:
+    path: /etc/dracut.conf.d/default.conf
+    create: true
+    block: |
+      omit_dracutmodules+=" network cifs nfs brltty "
+      compress="zstd"
+
+- name: Ensure TPM2 module is added.
+  lineinfile:
+    path: /etc/dracut.conf.d/tpm.conf
+    regexp: \stpm2\-tss\s
+    line: "add_dracutmodules+=\" tpm2-tss \""
+    owner: root
+    group: root
+    create: true
+    state: present
+  when: setup_tpm2 | bool
+
+- name: Ensure mkinitcpio is uninstalled.
+  community.general.pacman:
+    name: mkinitcpio
+    state: absent
+  when: ansible_distribution == "Archlinux"

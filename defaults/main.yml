@@ -6,8 +6,9 @@ default_user_passwd: "{{ default_user_passwd | password('sha512', default_passwd
 default_user_shell: "/bin/zsh"
 user_home: "/home/{{ default_user_username }}"
 
-setup_users: false
+setup_dracut: true
 setup_lib32: true
+setup_users: false
 
 # Debian defaults
 setup_sid: true
